@@ -32,6 +32,6 @@ jobs:
           await github.rest.actions.createWorkflowDispatch({
             owner: ${{inputs.downstream_owner_name}},
             repo: ${{inputs.repo_name}},
-            workflow_id: ${{inputs.workflow_file_name}}
+            workflow_id: ${{inputs.workflow_file_name}},
             ref: 'main'
           })
