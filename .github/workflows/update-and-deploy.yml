@@ -1,7 +1,7 @@
 name: Deploy Changes
 
 on:
-  workflow_dispatch:
+  workflow_call:
     inputs:
       username:
         required: true
