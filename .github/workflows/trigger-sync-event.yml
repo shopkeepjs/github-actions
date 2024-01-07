@@ -1,7 +1,7 @@
 name: Sync to Organization Fork
 
 on:
-    workflow_dispatch:
+    workflow_call:
       inputs:
         upstream_owner_name:
           required: true
