@@ -1,0 +1,58 @@
+name: Deploy Changes
+
+on:
+  workflow_dispatch:
+    inputs:
+      username:
+        required: true
+        type: string
+      email:
+          required: true
+          type: string
+      upstream-repo:
+        required: true
+        type: string
+      mozart-dir-location:
+          required: true
+          type: string
+    secrets:
+      UPSTREAM_DEPLOY_KEY:
+        required: true
+
+jobs:
+  merge-from-upstream:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Set up SSH Agent
+      uses: dchancellor-org/ssh-agent@master
+      with:
+        ssh-private-key: ${{ secrets.UPSTREAM_DEPLOY_KEY }}
+
+    - name: Merge upstream changes
+      run: |
+        git config user.name ${{inputs.username}}
+        git config user.email ${{inputs.email}}
+        git remote add upstream ${{inputs.upstream-repo}}
+        git fetch upstream
+        git merge upstream/main -m "Merging upstream changes"
+        git push origin main
+  deploy_to_mozart:
+    needs: [merge-from-upstream]
+    runs-on: self-hosted
+    steps:
+      - uses: actions/checkout@v4
+      - name: Push latest changes to Mozart
+        run: |
+          cd ${{inputs.mozart-dir-location}}
+          # Save the name of the current branch
+          current_branch=$(git rev-parse --abbrev-ref HEAD)
+          
+          # Checkout main and pull the latest changes
+          git checkout main
+          git pull
+          
+          # Return to the original branch
+          git checkout $current_branch

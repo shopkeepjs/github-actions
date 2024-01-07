@@ -1,0 +1,37 @@
+name: Sync to Organization Fork
+
+on:
+    workflow_dispatch:
+      inputs:
+        upstream_owner_name:
+          required: true
+          type: string
+        downstream_owner_name:
+            required: true
+            type: string
+        repo_name:
+          required: true
+          type: string
+        workflow_file_name:
+            required: true
+            type: string
+      secrets:
+        ORG_PAT:
+          required: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    if: github.repository_owner == ${{inputs.upstream_owner_name}}
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+    - uses: actions/github-script@v6
+      with:
+        github-token: ${{ secrets.ORG_PAT }}
+        script: |
+          await github.rest.actions.createWorkflowDispatch({
+            owner: ${{inputs.downstream_owner_name}},
+            repo: ${{inputs.repo_name}},
+            workflow_id: ${{inputs.workflow_file_name}}
+            ref: 'main'
+          })
