@@ -22,7 +22,7 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    if: github.repository_owner == ${{inputs.upstream_owner_name}}
+    # if: github.repository_owner == ${{inputs.upstream_owner_name}}
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
     - uses: actions/github-script@v6
